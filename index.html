@@ -11,9 +11,9 @@
    COLOUR charcoal #0b0c0b ground, warm cream #efe8d8 ink, acid lime #c6f432 = light/data, terracotta #e4572e = threat
    TYPE   Unbounded (display) + Onest (text) + JetBrains Mono for tiny technical tags
    LAYOUT hero: headline left + photo right on laptop, stacked on phone; bands of varied shape below */
-@font-face{font-family:Unbounded;src:url(fonts/unbounded.woff2) format("woff2");font-weight:200 900;font-display:swap}
-@font-face{font-family:Onest;src:url(fonts/onest.woff2) format("woff2");font-weight:100 900;font-display:swap}
-@font-face{font-family:"JetBrains Mono";src:url(fonts/jbmono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+@font-face{font-family:Unbounded;src:url(unbounded.woff2) format("woff2");font-weight:200 900;font-display:swap}
+@font-face{font-family:Onest;src:url(onest.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(jbmono.woff2) format("woff2");font-weight:100 800;font-display:swap}
 :root{color-scheme:dark;--bg:#0b0c0b;--bg2:#111310;--card:#151714;--card2:#1b1e1a;--ink:#efe8d8;--mut:#a9a596;--dim:#6f6d63;--line:rgba(239,232,216,.12);--lime:#c6f432;--lime2:#a6d417;--red:#e4572e;--glow:#c6f432;--ease:cubic-bezier(.2,.8,.2,1)}
 *{box-sizing:border-box;min-width:0}
 html{scroll-behavior:smooth;scroll-padding-top:80px}
@@ -288,7 +288,7 @@ table,thead,tbody,tr,th,td{display:block}thead{display:none}tr{display:grid;grid
 </div>
 </div>
 <div class="photo" data-r style="--i:2">
-<img src="img/product.jpg" alt="Два промышленных компьютера PlantEdge, соединённые жёлтым оптоволокном" data-par="-.12" fetchpriority="high">
+<img src="product.jpg" alt="Два промышленных компьютера PlantEdge, соединённые жёлтым оптоволокном" data-par="-.12" fetchpriority="high">
 <div class="beam"></div>
 <div class="chip c2"><span class="dot"></span>TX → одно волокно → RX</div>
 <div class="chip c3">Caster + Catcher</div>
@@ -403,7 +403,7 @@ table,thead,tbody,tr,th,td{display:block}thead{display:none}tr{display:grid;grid
 </ul>
 </div>
 <div class="phone" data-r style="--i:2">
-<video id="reel" src="media/reel.mp4" poster="media/poster.jpg" playsinline preload="metadata" controls></video>
+<video id="reel" src="reel.mp4" poster="poster.jpg" playsinline preload="metadata" controls></video>
 <button class="play" id="play" aria-label="Смотреть ролик"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span></button>
 </div>
 </div>
@@ -415,16 +415,16 @@ table,thead,tbody,tr,th,td{display:block}thead{display:none}tr{display:grid;grid
 <div data-r><p class="lead">От прозрачного корпуса с проводами до промышленных безвентиляторных компьютеров, готовых к серийному производству.</p><div class="galnav" style="margin-top:22px"><button id="gPrev" aria-label="Назад">←</button><button id="gNext" aria-label="Вперёд">→</button></div></div>
 </div></div>
 <div class="gal" id="gal" data-r>
-<figure class="shot" style="margin:0"><div class="im"><img src="img/product.jpg" alt="Два PlantEdge с жёлтым оптоволокном" loading="lazy"></div><figcaption class="cap"><b>Текущий продукт</b><span>Два промышленных ПК PlantEdge и одно волокно между ними</span></figcaption></figure>
-<figure class="shot" style="margin:0"><div class="im"><img src="img/logo-close.jpg" alt="Корпус-радиатор PlantEdge крупным планом" loading="lazy"></div><figcaption class="cap"><b>Корпус-радиатор</b><span>Без вентиляторов: тепло уходит через рёбра корпуса</span></figcaption></figure>
-<figure class="shot tall" style="margin:0"><div class="im"><img src="img/demo-stand.jpg" alt="Демо-стенд Data Diode с жёлтым оптоволокном и QR-кодом" loading="lazy"></div><figcaption class="cap"><b>Демо-стенд</b><span>То самое одностороннее волокно, datadiode.kz</span></figcaption></figure>
-<figure class="shot" style="margin:0"><div class="im"><img src="img/laptop.jpg" alt="PlantEdge рядом с ноутбуком" loading="lazy"></div><figcaption class="cap"><b>Настройка и мониторинг</b><span>Ubuntu, Docker и Kafka на каждом компьютере</span></figcaption></figure>
-<figure class="shot" style="margin:0"><div class="im"><img src="img/label.jpg" alt="QR-метка PlantEdge на корпусе" loading="lazy"></div><figcaption class="cap"><b>Маркировка</b><span>QR-метка PlantEdge на корпусе Catcher</span></figcaption></figure>
-<figure class="shot tall" style="margin:0"><div class="im"><img src="img/desk.jpg" alt="Caster и Catcher на рабочем столе" loading="lazy"></div><figcaption class="cap"><b>Рабочий стенд</b><span>Caster и Catcher во время сборки</span></figcaption></figure>
-<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-case.jpg" alt="Первый прототип в прозрачном корпусе" loading="lazy"></div><figcaption class="cap"><b>Первый прототип</b><span>Прозрачный корпус и знак высокого напряжения</span></figcaption></figure>
-<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-board.jpg" alt="Плата прототипа изнутри" loading="lazy"></div><figcaption class="cap"><b>Прототип изнутри</b><span>Плата, сетевые адаптеры, оптика</span></figcaption></figure>
-<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-inside.jpg" alt="Сетевые адаптеры в коробках" loading="lazy"></div><figcaption class="cap"><b>Сетевые адаптеры</b><span>Оптические карты для второго прототипа</span></figcaption></figure>
-<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-nic.jpg" alt="Плата адаптера с оптическим разъёмом" loading="lazy"></div><figcaption class="cap"><b>Эксперименты с адаптером</b><span>Разбираемся, как работает оптика изнутри</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="product.jpg" alt="Два PlantEdge с жёлтым оптоволокном" loading="lazy"></div><figcaption class="cap"><b>Текущий продукт</b><span>Два промышленных ПК PlantEdge и одно волокно между ними</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="logo-close.jpg" alt="Корпус-радиатор PlantEdge крупным планом" loading="lazy"></div><figcaption class="cap"><b>Корпус-радиатор</b><span>Без вентиляторов: тепло уходит через рёбра корпуса</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="demo-stand.jpg" alt="Демо-стенд Data Diode с жёлтым оптоволокном и QR-кодом" loading="lazy"></div><figcaption class="cap"><b>Демо-стенд</b><span>То самое одностороннее волокно, datadiode.kz</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="laptop.jpg" alt="PlantEdge рядом с ноутбуком" loading="lazy"></div><figcaption class="cap"><b>Настройка и мониторинг</b><span>Ubuntu, Docker и Kafka на каждом компьютере</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="label.jpg" alt="QR-метка PlantEdge на корпусе" loading="lazy"></div><figcaption class="cap"><b>Маркировка</b><span>QR-метка PlantEdge на корпусе Catcher</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="desk.jpg" alt="Caster и Catcher на рабочем столе" loading="lazy"></div><figcaption class="cap"><b>Рабочий стенд</b><span>Caster и Catcher во время сборки</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="proto-case.jpg" alt="Первый прототип в прозрачном корпусе" loading="lazy"></div><figcaption class="cap"><b>Первый прототип</b><span>Прозрачный корпус и знак высокого напряжения</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="proto-board.jpg" alt="Плата прототипа изнутри" loading="lazy"></div><figcaption class="cap"><b>Прототип изнутри</b><span>Плата, сетевые адаптеры, оптика</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="proto-inside.jpg" alt="Сетевые адаптеры в коробках" loading="lazy"></div><figcaption class="cap"><b>Сетевые адаптеры</b><span>Оптические карты для второго прототипа</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="proto-nic.jpg" alt="Плата адаптера с оптическим разъёмом" loading="lazy"></div><figcaption class="cap"><b>Эксперименты с адаптером</b><span>Разбираемся, как работает оптика изнутри</span></figcaption></figure>
 </div>
 </section>
 
@@ -485,7 +485,7 @@ table,thead,tbody,tr,th,td{display:block}thead{display:none}tr{display:grid;grid
 <div class="card s2 tilt" data-r style="--i:2"><span class="k">03</span><h3>Мониторинг безопасности</h3><p>Логи и инфраструктура в SIEM</p></div>
 <div class="card s2 half tilt" data-r><span class="k">04</span><h3>Облако и Power BI</h3><p>Отчёты в привычных инструментах</p></div>
 <div class="card s2 half tilt" data-r style="--i:1"><span class="k">05</span><h3>Предиктивная аналитика</h3><p>Модели, которые замечают поломку заранее</p></div>
-<div class="card s2 imgc" data-r style="--i:2"><img src="img/laptop.jpg" alt="Мониторинг данных PlantEdge" loading="lazy"></div>
+<div class="card s2 imgc" data-r style="--i:2"><img src="laptop.jpg" alt="Мониторинг данных PlantEdge" loading="lazy"></div>
 <div class="card s3 tilt" data-r><span class="k">06</span><h3>Оптимизация процесса</h3><p>Поиск потерь по живым данным</p></div>
 <div class="card s3 tilt" data-r style="--i:1"><span class="k">07</span><h3>Удалённые эксперты</h3><p>Специалисты видят процесс, но не могут ничего нажать</p></div>
 </div>
