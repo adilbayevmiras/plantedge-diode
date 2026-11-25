@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlantEdge Data Diode</title>
+<style>
+/* VOICE  premium night control room: confident, technical, atmospheric
+   IDEA   a beam of light in a fibre that only travels one way; the page itself is that fibre (scroll = the light dot)
+   PICTURE real PlantEdge hardware photos + a live model of the diode with an attack that dies at the fibre
+   COLOUR charcoal #0b0c0b ground, warm cream #efe8d8 ink, acid lime #c6f432 = light/data, terracotta #e4572e = threat
+   TYPE   Unbounded (display) + Onest (text) + JetBrains Mono for tiny technical tags
+   LAYOUT hero: headline left + photo right on laptop, stacked on phone; bands of varied shape below */
+@font-face{font-family:Unbounded;src:url(fonts/unbounded.woff2) format("woff2");font-weight:200 900;font-display:swap}
+@font-face{font-family:Onest;src:url(fonts/onest.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url(fonts/jbmono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+:root{color-scheme:dark;--bg:#0b0c0b;--bg2:#111310;--card:#151714;--card2:#1b1e1a;--ink:#efe8d8;--mut:#a9a596;--dim:#6f6d63;--line:rgba(239,232,216,.12);--lime:#c6f432;--lime2:#a6d417;--red:#e4572e;--glow:#c6f432;--ease:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Onest,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img,video{max-width:100%;display:block}
+::selection{background:var(--lime);color:#0b0c0b}
+h1,h2,h3{font-family:Unbounded,Onest,system-ui,sans-serif;font-weight:700;letter-spacing:-.025em;line-height:1.04;margin:0;text-wrap:balance}
+h1{font-size:clamp(34px,5.2vw,76px);font-weight:800}
+h2{font-size:clamp(26px,3.5vw,48px)}
+h3{font-size:clamp(19px,1.6vw,22px);line-height:1.2;letter-spacing:-.01em}
+p{margin:0}
+.lime{color:var(--lime)}
+.red{color:var(--red)}
+.mono{font:500 13px/1.4 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.02em;color:var(--mut)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 max(5vw,20px)}
+section{position:relative;padding:clamp(80px,11vw,160px) 0}
+.lead{font-size:clamp(17px,1.4vw,20px);color:var(--mut);max-width:58ch}
+
+/* ---------- living background ---------- */
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;background:radial-gradient(120% 80% at 50% 0%,#141712 0%,var(--bg) 60%)}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.38;will-change:transform;transition:background-color 1.6s var(--ease)}
+.b1{width:56vmax;height:56vmax;left:-14vmax;top:-18vmax;background:var(--glow);opacity:.16;animation:d1 38s ease-in-out infinite alternate}
+.b2{width:44vmax;height:44vmax;right:-16vmax;top:20vh;background:#e4572e;opacity:.11;animation:d2 46s ease-in-out infinite alternate}
+.b3{width:50vmax;height:50vmax;left:22vw;bottom:-28vmax;background:#efe8d8;opacity:.06;animation:d3 52s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate(18vmax,22vmax) scale(1.15)}}
+@keyframes d2{to{transform:translate(-20vmax,18vmax) scale(.9)}}
+@keyframes d3{to{transform:translate(-16vmax,-14vmax) scale(1.1)}}
+.grain{position:fixed;inset:-50%;z-index:-1;pointer-events:none;opacity:.075;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grain 1.2s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+
+/* ---------- fibre progress ---------- */
+.fiber{position:fixed;left:22px;top:90px;bottom:28px;width:2px;background:linear-gradient(var(--line),var(--line));z-index:30;pointer-events:none}
+.fiber i{position:absolute;left:-5px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(198,244,50,.35),0 0 22px 6px var(--lime);top:0;transform:translateY(calc(var(--p,0) * (100vh - 130px)))}
+.fiber b{position:absolute;left:0;top:0;width:2px;height:calc(var(--p,0) * 100%);background:linear-gradient(transparent,var(--lime));opacity:.8}
+@media(max-width:1100px){.fiber{display:none}}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:40;width:min(1180px,calc(100% - 24px));display:flex;align-items:center;gap:16px;padding:10px 12px 10px 18px;border-radius:999px;background:rgba(17,19,16,.62);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border:1px solid var(--line);transition:background .4s,transform .5s var(--ease)}
+nav.hide{transform:translate(-50%,-140%)}
+.logo{display:flex;align-items:center;gap:10px;font:700 15px Unbounded,sans-serif;text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
+.logo i{width:28px;height:28px;border-radius:8px;background:var(--ink);position:relative;flex:none}
+.logo i::after{content:"";position:absolute;left:6px;right:6px;top:12px;height:4px;border-radius:2px;background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.links{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.links a{font-size:14.5px;font-weight:500;text-decoration:none;padding:9px 14px;border-radius:999px;color:var(--mut);transition:color .3s,background .3s}
+.links a:hover{color:var(--ink);background:rgba(239,232,216,.07)}
+.navcta{margin-left:6px}.navcta .short{display:none}@media(max-width:400px){.navcta .long{display:none}.navcta .short{display:inline}}
+@media(max-width:860px){.links{display:none}.navcta{margin-left:auto}}
+
+/* ---------- buttons ---------- */
+.btn{--mx:0px;--my:0px;position:relative;display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 24px;border-radius:999px;border:1px solid var(--line);background:rgba(239,232,216,.04);color:var(--ink);font:600 16px Onest,system-ui,sans-serif;text-decoration:none;cursor:pointer;overflow:hidden;isolation:isolate;transform:translate(var(--mx),var(--my));transition:transform .35s var(--ease),border-color .3s,background .3s,box-shadow .3s}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s var(--ease)}
+.btn:hover::before{transform:translateX(120%)}
+.btn:hover{border-color:rgba(239,232,216,.35)}
+.btn.lime{background:var(--lime);color:#0b0c0b;border-color:var(--lime);box-shadow:0 0 0 0 rgba(198,244,50,.0)}
+.btn.lime:hover{box-shadow:0 10px 40px -8px rgba(198,244,50,.55)}
+.btn.warn{border-color:rgba(228,87,46,.55);color:#ffb39c}
+.btn.warn:hover{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 10px 40px -10px rgba(228,87,46,.7)}
+.btn.sm{min-height:42px;padding:0 18px;font-size:14.5px}
+.btn svg{width:18px;height:18px;transition:transform .35s var(--ease)}
+.btn:hover svg{transform:translateX(3px)}
+.btn:focus-visible,.tab:focus-visible,a:focus-visible,summary:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+
+/* ---------- reveal ---------- */
+.js [data-r]{opacity:0;transform:translateY(34px);transition:opacity .9s var(--ease),transform 1s var(--ease);transition-delay:calc(var(--i,0) * 90ms)}
+.js [data-r].in{opacity:1;transform:none}
+.js .split .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+.js .split .w>span{display:inline-block;transform:translateY(105%);transition:transform 1s var(--ease);transition-delay:calc(var(--i,0) * 70ms)}
+.js .split.in .w>span{transform:none}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(130px,16vw,200px);padding-bottom:clamp(60px,8vw,110px)}
+.herog{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,80px);align-items:center}
+.hero .lead{margin-top:26px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.photo{position:relative;border-radius:28px;overflow:hidden;border:1px solid var(--line);aspect-ratio:6/5;background:var(--card)}
+.photo img{width:100%;height:118%;object-fit:cover;transform:translateY(var(--py,0px)) scale(1.04);will-change:transform}
+.photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,12,11,0) 45%,rgba(11,12,11,.85));pointer-events:none}
+.chip{position:absolute;z-index:2;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:14px;background:rgba(11,12,11,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);font-size:14px;font-weight:600;animation:float 6s ease-in-out infinite}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+.chip.c1{left:18px;bottom:22px}.chip.c2{right:18px;top:20px;animation-delay:-2s}.chip.c3{right:18px;bottom:74px;animation-delay:-4s}
+@keyframes float{50%{transform:translateY(-8px)}}
+.beam{position:absolute;left:0;right:0;top:56%;height:2px;z-index:1;background:linear-gradient(90deg,transparent,var(--lime),transparent);opacity:.0;animation:beam 3.6s var(--ease) infinite}
+@keyframes beam{0%{transform:translateX(-100%);opacity:0}30%{opacity:.9}100%{transform:translateX(100%);opacity:0}}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:clamp(48px,6vw,80px)}
+.stat{padding:22px 22px 20px;border-radius:22px;background:rgba(21,23,20,.6);border:1px solid var(--line)}
+.stat b{display:block;font:800 clamp(30px,3.6vw,48px)/1 Unbounded,sans-serif;letter-spacing:-.03em}
+.stat span{display:block;margin-top:10px;color:var(--mut);font-size:15px}
+
+/* ---------- marquee ---------- */
+.marquee{border-block:1px solid var(--line);overflow:hidden;padding:20px 0;background:rgba(11,12,11,.4)}
+.track{display:flex;gap:48px;width:max-content;animation:mq 34s linear infinite}
+.track span{font:700 clamp(18px,2vw,26px) Unbounded,sans-serif;color:var(--dim);white-space:nowrap;display:flex;align-items:center;gap:48px}
+.track span::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 14px var(--lime)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- generic ---------- */
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(40px,5vw,64px)}
+.stage{position:relative;border-radius:28px;overflow:hidden;border:1px solid var(--line);background:rgba(17,19,16,.75)}
+.fig{position:relative;height:clamp(340px,40vw,520px)}
+.fig>canvas,.fig>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 18px;border-top:1px solid var(--line);background:rgba(11,12,11,.55)}
+.status{flex:1 1 280px;font-size:15px;color:var(--mut);min-height:24px;transition:color .3s}
+.status.alert{color:#ff9d80}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tab{min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mut);font:600 15px Onest,system-ui,sans-serif;cursor:pointer;transition:all .35s var(--ease)}
+.tab:hover{color:var(--ink);border-color:rgba(239,232,216,.3)}
+.tab[aria-selected=true]{background:var(--ink);color:#0b0c0b;border-color:var(--ink)}
+
+/* cards with spotlight */
+.card{--x:50%;--y:50%;position:relative;border-radius:24px;padding:28px;background:var(--card);border:1px solid var(--line);overflow:hidden;transition:transform .5s var(--ease),border-color .4s;transform-style:preserve-3d}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--x) var(--y),rgba(198,244,50,.12),transparent 45%);opacity:0;transition:opacity .4s;pointer-events:none}
+.card:hover{border-color:rgba(198,244,50,.35)}
+.card:hover::before{opacity:1}
+.card p{color:var(--mut);font-size:15.5px;margin-top:10px}
+
+/* why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.why .card b{font:700 22px Unbounded,sans-serif;display:block}
+.why .bad{background:linear-gradient(160deg,rgba(228,87,46,.16),var(--card) 60%)}
+.why .bad b{color:#ff9d80}
+.tl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px;position:relative}
+.tl::before{content:"";position:absolute;left:0;right:0;top:9px;height:1px;background:var(--line)}
+.tl>div{position:relative;padding-top:34px}
+.tl>div::before{content:"";position:absolute;top:2px;left:0;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--lime)}
+.tl>div.hot::before{border-color:var(--red);background:var(--red);box-shadow:0 0 18px var(--red)}
+.tl b{display:block;font:700 17px Unbounded,sans-serif;white-space:nowrap}
+.tl span{display:block;margin-top:6px;font-size:14.5px;color:var(--mut);line-height:1.45}
+.src{font-size:14px;color:var(--dim);margin-top:20px}
+
+/* philosophy */
+.phil{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.phil .card{padding:0}
+.phil .fig{height:300px}
+.phil .txt{padding:24px 28px 28px}
+.phil .txt h3 span{color:var(--mut);font-weight:500}
+
+/* physics */
+.phys{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,4vw,56px);align-items:center}
+.phys .fig{height:clamp(300px,30vw,380px)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:22px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:48px minmax(0,1fr);gap:16px}
+.steps li::before{content:counter(s,decimal-leading-zero);font:700 14px "JetBrains Mono",monospace;color:var(--lime);border:1px solid rgba(198,244,50,.4);border-radius:12px;height:40px;display:grid;place-items:center}
+.steps b{display:block;font:700 18px Unbounded,sans-serif;letter-spacing:-.01em}
+.steps span{display:block;color:var(--mut);font-size:15.5px;margin-top:4px}
+
+/* scheme */
+.scheme{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+.scheme .fig{height:clamp(460px,48vw,600px)}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.log li{padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(21,23,20,.55);cursor:pointer;transition:all .45s var(--ease)}
+.log li b{display:block;font-size:15.5px;font-weight:600}
+.log li span{display:block;font-size:14.5px;color:var(--mut);line-height:1.5;max-height:0;overflow:hidden;opacity:0;transition:max-height .5s var(--ease),opacity .4s,margin .4s}
+.log li.on{border-color:rgba(198,244,50,.55);background:rgba(198,244,50,.07);transform:translateX(6px)}
+.log li.on span{max-height:140px;opacity:1;margin-top:6px}
+.log li.block{border-color:rgba(228,87,46,.7);background:rgba(228,87,46,.09)}
+.log li.block b{color:#ff9d80}
+
+/* video */
+.vid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);gap:clamp(30px,6vw,90px);align-items:center}
+.phone{position:relative;width:min(360px,80vw);margin:0 auto;aspect-ratio:9/19.2;border-radius:46px;padding:12px;background:linear-gradient(160deg,#2a2d29,#121411);border:1px solid rgba(239,232,216,.18);box-shadow:0 40px 120px -30px rgba(198,244,50,.28),0 0 0 1px rgba(0,0,0,.6) inset}
+.phone video{width:100%;height:100%;object-fit:cover;border-radius:36px;background:#000}
+.phone::before{content:"";position:absolute;top:22px;left:50%;transform:translateX(-50%);width:90px;height:24px;border-radius:12px;background:#000;z-index:2}
+.play{position:absolute;inset:12px;border-radius:36px;display:grid;place-items:center;background:rgba(0,0,0,.25);border:0;cursor:pointer;transition:opacity .4s;color:#0b0c0b}
+.play span{width:86px;height:86px;border-radius:50%;background:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 12px rgba(198,244,50,.18),0 0 60px rgba(198,244,50,.6);transition:transform .4s var(--ease)}
+.play:hover span{transform:scale(1.08)}
+.play svg{width:30px;height:30px;margin-left:5px}
+.play.off{opacity:0;pointer-events:none}
+.vlist{list-style:none;padding:0;margin:28px 0 0;display:grid;gap:12px}
+.vlist li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:baseline;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.vlist .mono{color:var(--lime)}
+
+/* hardware gallery */
+.gal{--gh:clamp(260px,30vw,420px);--pad:calc(max(5vw,20px) + max(0px,(100vw - 1280px)/2));display:flex;align-items:flex-start;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);padding:4px var(--pad) 24px;scrollbar-width:none}
+.gal::-webkit-scrollbar{display:none}
+.shot{flex:none;width:min-content;scroll-snap-align:start;border-radius:24px;overflow:hidden;background:var(--card);border:1px solid var(--line);transition:transform .5s var(--ease),border-color .4s}
+.shot:hover{transform:translateY(-6px);border-color:rgba(198,244,50,.35)}
+.shot .im{height:var(--gh);aspect-ratio:4/3;overflow:hidden}
+.shot.tall .im{aspect-ratio:3/4}
+.shot img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.shot:hover img{transform:scale(1.06)}
+.shot .cap{padding:16px 18px 18px;min-height:96px}
+.shot .cap b{display:block;font-size:16px}
+.shot .cap span{display:block;font-size:14px;color:var(--mut);margin-top:4px}
+.galnav{display:flex;gap:10px}
+.galnav button{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:20px;transition:all .3s}
+.galnav button:hover{background:var(--ink);color:#0b0c0b}
+
+/* story */
+.story{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px}
+.story div{position:relative;padding:22px 16px 18px;border-radius:20px;background:rgba(21,23,20,.6);border:1px solid var(--line);transition:border-color .4s,transform .5s var(--ease)}
+.story div:hover{border-color:rgba(198,244,50,.4);transform:translateY(-4px)}
+.story .mono{display:block;margin-bottom:12px;color:var(--lime)}
+.story b{display:block;font-size:16px;line-height:1.3}
+.story span{display:block;font-size:14px;color:var(--mut);margin-top:6px;line-height:1.45}
+.story div.now{background:linear-gradient(160deg,rgba(198,244,50,.18),rgba(21,23,20,.6) 70%);border-color:rgba(198,244,50,.5)}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.rules svg{width:42px;height:42px;margin-bottom:18px}
+
+/* compare */
+.tbl{border-radius:24px;border:1px solid var(--line);overflow:hidden;background:rgba(21,23,20,.55)}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th,td{text-align:left;padding:20px 22px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font:700 15px Unbounded,sans-serif;color:var(--mut)}
+thead th:last-child{color:var(--lime)}
+tbody th{font-weight:600;width:26%;color:var(--ink)}
+td{color:var(--mut)}
+td.win{color:var(--ink);background:rgba(198,244,50,.06)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+tbody tr{transition:background .3s}
+tbody tr:hover{background:rgba(239,232,216,.03)}
+
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:minmax(180px,auto);gap:14px}
+.bento .card{display:flex;flex-direction:column;justify-content:flex-end}
+.bento .k{font:500 13px "JetBrains Mono",monospace;color:var(--lime);margin-bottom:auto}
+.bento h3{margin-top:28px}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}.r2{grid-row:span 2}
+.bento .big{background:linear-gradient(150deg,rgba(198,244,50,.16),var(--card) 55%)}
+.bento .big h3{font-size:clamp(24px,2.4vw,34px)}
+.bento .imgc{padding:0;justify-content:stretch}
+.bento .imgc img{width:100%;height:100%;object-fit:cover;opacity:.85}
+
+/* faq */
+.faq{max-width:920px}
+details{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;padding:26px 52px 26px 0;font:600 clamp(17px,1.6vw,20px) Onest,sans-serif;position:relative;transition:color .3s}
+summary:hover{color:var(--lime)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:22px;font-weight:400;transition:transform .45s var(--ease),background .3s,color .3s}
+details[open] summary::after{transform:translateY(-50%) rotate(45deg);background:var(--lime);color:#0b0c0b;border-color:var(--lime)}
+details p{color:var(--mut);padding:0 0 26px;max-width:72ch}
+
+/* footer */
+.final{text-align:left}
+.final h2{font-size:clamp(32px,5vw,72px);font-weight:800}
+footer{border-top:1px solid var(--line);padding:56px 0 70px}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:40px}
+footer ol{margin:12px 0 0;padding-left:20px;color:var(--mut);font-size:14.5px}
+footer li{margin:5px 0}
+footer a{text-decoration-color:rgba(239,232,216,.3);text-underline-offset:3px}
+footer a:hover{color:var(--lime)}
+
+@media(max-width:980px){.herog,.head,.phys,.scheme,.vid{grid-template-columns:minmax(0,1fr)}.photo{aspect-ratio:16/11}.rules{grid-template-columns:repeat(2,minmax(0,1fr))}.story{grid-template-columns:repeat(2,minmax(0,1fr))}.bento{grid-template-columns:repeat(2,minmax(0,1fr))}.s2,.s3,.s4{grid-column:span 2}.r2{grid-row:span 1}.bento .s2.half{grid-column:span 1}.fgrid{grid-template-columns:minmax(0,1fr)}.scheme .fig{height:560px}}
+@media(max-width:640px){body{font-size:16px}.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.stat{padding:16px 14px}.stat span{font-size:13px}.why,.phil{grid-template-columns:minmax(0,1fr)}.rules{grid-template-columns:minmax(0,1fr)}.tl{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:24px}.tl::before{display:none}.fig{height:380px}.phys .fig{height:300px}.scheme .fig{height:620px}.ctrl .btn{flex:1 1 auto;justify-content:center}.bento .s2.half{grid-column:span 2}.chip{font-size:13px;padding:8px 11px}
+table,thead,tbody,tr,th,td{display:block}thead{display:none}tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid var(--line)}tr:last-child{border-bottom:0}tbody th{grid-column:1/-1;width:auto;border:0;padding:16px 16px 4px}td{border:0;padding:6px 16px 16px;font-size:14.5px}td::before{content:attr(data-l);display:block;font:500 12px "JetBrains Mono",monospace;color:var(--dim);margin-bottom:4px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.js [data-r]{opacity:1;transform:none}.js .split .w>span{transform:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="fiber" aria-hidden="true"><b></b><i></i></div>
+
+<nav id="nav">
+<a class="logo" href="#top"><i></i><span class="lt">PlantEdge Diode</span></a>
+<div class="links"><a href="#why">Зачем</a><a href="#model">Модель</a><a href="#physics">Физика</a><a href="#scheme">Схема</a><a href="#video">Видео</a><a href="#hardware">Железо</a><a href="#faq">Вопросы</a></div>
+<a class="btn lime sm navcta" href="#video"><span class="long">Смотреть ролик</span><span class="short">Ролик</span></a>
+</nav>
+
+<header class="hero" id="top" data-glow="#c6f432"><div class="wrap">
+<div class="herog">
+<div>
+<p class="mono" data-r>PlantEdge × AIMI · дата-диод для промышленности</p>
+<h1 class="split" style="margin-top:22px">Данные&nbsp;— <span class="lime">наружу.</span> Внутрь&nbsp;— ничего.</h1>
+<p class="lead" data-r style="--i:3">Канал связи, который физически работает только в одну сторону. Показания турбин и насосов уходят в офис, облако и аналитику, а вирус или чужая команда не могут пройти назад: у этого провода просто нет обратной дороги.</p>
+<div class="cta" data-r style="--i:4">
+<a class="btn lime mag" href="#model">Посмотреть, как работает <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+<a class="btn mag" href="#video">Ролик за минуту</a>
+</div>
+</div>
+<div class="photo" data-r style="--i:2">
+<img src="img/product.jpg" alt="Два промышленных компьютера PlantEdge, соединённые жёлтым оптоволокном" data-par="-.12" fetchpriority="high">
+<div class="beam"></div>
+<div class="chip c2"><span class="dot"></span>TX → одно волокно → RX</div>
+<div class="chip c3">Caster + Catcher</div>
+<div class="chip c1"><span class="dot" style="background:var(--red);box-shadow:0 0 12px var(--red)"></span>обратно: 0 бит</div>
+</div>
+</div>
+<div class="stats">
+<div class="stat" data-r style="--i:1"><b data-count="1">1</b><span>волокно вместо двух</span></div>
+<div class="stat" data-r style="--i:2"><b><span data-count="0" data-from="1024">0</span> бит</b><span>проходит обратно</span></div>
+<div class="stat" data-r style="--i:3"><b data-count="2">2</b><span>компьютера по разные стороны</span></div>
+</div>
+</div></header>
+
+<div class="marquee" aria-hidden="true"><div class="track"><span>IEC 104</span><span>OPC UA</span><span>MQTT</span><span>Modbus</span><span>Syslog</span><span>Kafka</span><span>UDP</span><span>SCADA</span><span>IEC 104</span><span>OPC UA</span><span>MQTT</span><span>Modbus</span><span>Syslog</span><span>Kafka</span><span>UDP</span><span>SCADA</span></div></div>
+
+<section id="why" data-glow="#e4572e"><div class="wrap">
+<div class="head">
+<h2 class="split">Почему завод нельзя просто подключить к интернету</h2>
+<p class="lead" data-r>Внутри завода своя сеть — OT, операционные технологии. В ней контроллеры, которые открывают клапаны и крутят турбины. Компании нужны их данные, но каждое подключение наружу — это дверь, через которую можно войти.</p>
+</div>
+<div class="why">
+<div class="card" data-r><b>Взлом офиса</b><p>Утекли письма и таблицы. Неприятно, но это данные: их восстанавливают из резервных копий.</p></div>
+<div class="card bad" data-r style="--i:1"><b>Взлом завода</b><p>Остановка производства, пожар, выброс. Сгоревшую турбину из бэкапа не восстановишь.</p></div>
+</div>
+<div class="card" data-r style="margin-top:16px;padding:32px">
+<h3>Случай Triton: через офис — к аварийной защите</h3>
+<p>Нефтехимический завод в Саудовской Аравии. Хакеры добрались до системы аварийной защиты — той, что последней останавливает процесс, когда всё идёт не так.</p>
+<div class="tl">
+<div><b>2014</b><span>Злоумышленники уже в офисной сети компании</span></div>
+<div><b>Июнь 2017</b><span>Защита останавливает завод. Решили, что сбой механический</span></div>
+<div class="hot"><b>Август 2017</b><span>Вторая остановка. Вызывают расследователей</span></div>
+<div><b>Декабрь 2017</b><span>Атаку раскрывают публично</span></div>
+</div>
+<p class="src">В заводскую сеть, по оценке MIT Technology Review, попали скорее всего через плохо настроенный файрвол.</p>
+</div>
+</div></section>
+
+<section id="model" data-glow="#c6f432" style="padding-top:40px"><div class="wrap">
+<div class="head">
+<h2 class="split">Живая модель: попробуй атаковать</h2>
+<p class="lead" data-r>Слева завод, справа офис и облако. Данные с турбины идут через Caster, оптоволокно и Catcher к графикам. Нажми «Атаковать снаружи» и посмотри, где остановится вирус.</p>
+</div>
+<div class="stage" data-r>
+<div class="fig" id="heroFig"><canvas id="hero" role="img" aria-label="Анимация: данные идут с завода через дата-диод в офис, атака из интернета останавливается на диоде"></canvas></div>
+<div class="ctrl">
+<button class="btn lime sm mag" id="bSend">Отправить данные</button>
+<button class="btn warn sm mag" id="bAtk">Атаковать снаружи</button>
+<button class="btn sm" id="bPause" aria-pressed="false">Пауза</button>
+<p class="status" id="status" aria-live="polite">Показания с турбины идут на сервер в офисе.</p>
+</div>
+</div>
+</div></section>
+
+<section id="philosophy" data-glow="#efe8d8"><div class="wrap">
+<div class="head">
+<h2 class="split">Файрвол&nbsp;— это кран. Диод&nbsp;— это насос.</h2>
+<p class="lead" data-r>Так объясняет идею сама команда PlantEdge. Кран можно открыть, и тогда вода пойдёт в любую сторону. Насос качает только в одну, как его ни крути.</p>
+</div>
+<div class="phil">
+<div class="card" data-r><div class="fig"><svg id="pValve" role="img" aria-label="Файрвол как кран между двумя баками"></svg></div><div class="txt"><h3>Файрвол <span>— кран</span></h3><p>Правила решают, когда кран открыт. Ошибка в правилах — и поток может пойти обратно, на завод.</p></div></div>
+<div class="card" data-r style="--i:1"><div class="fig"><svg id="pPump" role="img" aria-label="Дата-диод как насос, который качает только из OT в IT"></svg></div><div class="txt"><h3>Дата-диод <span>— насос</span></h3><p>Устройство качает данные только из OT в IT. Обратного хода у него нет физически.</p></div></div>
+</div>
+</div></section>
+
+<section id="physics" data-glow="#c6f432"><div class="wrap">
+<div class="head">
+<h2 class="split">Как это работает физически</h2>
+<p class="lead" data-r>Обычный сетевой кабель — это две дороги: туда и обратно. В дата-диоде вторую дорогу убирают совсем.</p>
+</div>
+<div class="tabs" role="tablist" aria-label="Режим линии" data-r>
+<button class="tab" role="tab" aria-selected="false" id="pNormal">Обычная сеть</button>
+<button class="tab" role="tab" aria-selected="true" id="pDiode">Дата-диод</button>
+</div>
+<div class="phys">
+<div class="stage" data-r><div class="fig" id="physFig"><svg id="phys" role="img" aria-label="Оптическая линия: передатчик и приёмник"></svg></div></div>
+<ol class="steps">
+<li data-r><div><b>Свет вместо тока</b><span>Данные идут вспышками лазера по оптоволокну: вспышка — единица, темнота — ноль.</span></div></li>
+<li data-r style="--i:1"><div><b>Одно волокно</b><span>Слева только передатчик (TX), справа только фотоприёмник (RX). Второго волокна нет.</span></div></li>
+<li data-r style="--i:2"><div><b>Приёмник не умеет светить</b><span>Фотоприёмник может только ловить свет. Ни одна программа не заставит его отправить сигнал назад.</span></div></li>
+<li data-r style="--i:3"><div><b>Назад — ноль бит</b><span>Даже если взломать всё на стороне офиса, до завода не дойдёт ни один сигнал.</span></div></li>
+</ol>
+</div>
+</div></section>
+
+<section id="scheme" data-glow="#c6f432"><div class="wrap">
+<div class="head">
+<h2 class="split">Как устроен PlantEdge</h2>
+<p class="lead" data-r>Caster стоит внутри завода и собирает данные. Catcher стоит снаружи и раздаёт их. Между ними одно волокно. Выбери сценарий: на любой шаг справа можно нажать.</p>
+</div>
+<div class="tabs" role="tablist" aria-label="Сценарий" data-r>
+<button class="tab" role="tab" aria-selected="true" data-mode="tele">Телеметрия</button>
+<button class="tab" role="tab" aria-selected="false" data-mode="file">Передача файла</button>
+<button class="tab" role="tab" aria-selected="false" data-mode="atk">Атака снаружи</button>
+</div>
+<div class="scheme">
+<div class="stage" data-r><div class="fig" id="schFig"><svg id="sch" role="img" aria-label="Схема прохождения данных через PlantEdge"></svg></div></div>
+<ol class="log" id="log"></ol>
+</div>
+</div></section>
+
+<section id="video" data-glow="#c6f432"><div class="wrap">
+<div class="vid">
+<div>
+<p class="mono" data-r>Ролик · 64 секунды</p>
+<h2 class="split" style="margin-top:18px">Весь принцип за одну минуту</h2>
+<p class="lead" data-r style="margin-top:22px">Короткое объяснение для тех, кто впервые слышит слово «дата-диод». От атаки на завод до луча света, который светит только в одну сторону.</p>
+<ul class="vlist">
+<li data-r><span class="mono">00:00</span><span>Почему завод нельзя подключить к интернету</span></li>
+<li data-r style="--i:1"><span class="mono">00:13</span><span>Атака Triton, 2017 год</span></li>
+<li data-r style="--i:2"><span class="mono">00:29</span><span>Как устроен дата-диод изнутри</span></li>
+<li data-r style="--i:3"><span class="mono">00:41</span><span>Вирус против диода</span></li>
+</ul>
+</div>
+<div class="phone" data-r style="--i:2">
+<video id="reel" src="media/reel.mp4" poster="media/poster.jpg" playsinline preload="metadata" controls></video>
+<button class="play" id="play" aria-label="Смотреть ролик"><span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg></span></button>
+</div>
+</div>
+</div></section>
+
+<section id="hardware" data-glow="#efe8d8" style="padding-bottom:60px"><div class="wrap">
+<div class="head">
+<h2 class="split">Настоящее железо, не рендер</h2>
+<div data-r><p class="lead">От прозрачного корпуса с проводами до промышленных безвентиляторных компьютеров, готовых к серийному производству.</p><div class="galnav" style="margin-top:22px"><button id="gPrev" aria-label="Назад">←</button><button id="gNext" aria-label="Вперёд">→</button></div></div>
+</div></div>
+<div class="gal" id="gal" data-r>
+<figure class="shot" style="margin:0"><div class="im"><img src="img/product.jpg" alt="Два PlantEdge с жёлтым оптоволокном" loading="lazy"></div><figcaption class="cap"><b>Текущий продукт</b><span>Два промышленных ПК PlantEdge и одно волокно между ними</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="img/logo-close.jpg" alt="Корпус-радиатор PlantEdge крупным планом" loading="lazy"></div><figcaption class="cap"><b>Корпус-радиатор</b><span>Без вентиляторов: тепло уходит через рёбра корпуса</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="img/demo-stand.jpg" alt="Демо-стенд Data Diode с жёлтым оптоволокном и QR-кодом" loading="lazy"></div><figcaption class="cap"><b>Демо-стенд</b><span>То самое одностороннее волокно, datadiode.kz</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="img/laptop.jpg" alt="PlantEdge рядом с ноутбуком" loading="lazy"></div><figcaption class="cap"><b>Настройка и мониторинг</b><span>Ubuntu, Docker и Kafka на каждом компьютере</span></figcaption></figure>
+<figure class="shot" style="margin:0"><div class="im"><img src="img/label.jpg" alt="QR-метка PlantEdge на корпусе" loading="lazy"></div><figcaption class="cap"><b>Маркировка</b><span>QR-метка PlantEdge на корпусе Catcher</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="img/desk.jpg" alt="Caster и Catcher на рабочем столе" loading="lazy"></div><figcaption class="cap"><b>Рабочий стенд</b><span>Caster и Catcher во время сборки</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-case.jpg" alt="Первый прототип в прозрачном корпусе" loading="lazy"></div><figcaption class="cap"><b>Первый прототип</b><span>Прозрачный корпус и знак высокого напряжения</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-board.jpg" alt="Плата прототипа изнутри" loading="lazy"></div><figcaption class="cap"><b>Прототип изнутри</b><span>Плата, сетевые адаптеры, оптика</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-inside.jpg" alt="Сетевые адаптеры в коробках" loading="lazy"></div><figcaption class="cap"><b>Сетевые адаптеры</b><span>Оптические карты для второго прототипа</span></figcaption></figure>
+<figure class="shot tall" style="margin:0"><div class="im"><img src="img/proto-nic.jpg" alt="Плата адаптера с оптическим разъёмом" loading="lazy"></div><figcaption class="cap"><b>Эксперименты с адаптером</b><span>Разбираемся, как работает оптика изнутри</span></figcaption></figure>
+</div>
+</section>
+
+<section id="story" data-glow="#c6f432" style="padding-top:60px"><div class="wrap">
+<div class="head">
+<h2 class="split">Как всё началось</h2>
+<p class="lead" data-r>От книги про безопасность промышленных сетей до продукта, готового к серийному выпуску.</p>
+</div>
+<div class="story">
+<div data-r><span class="mono">01</span><b>Книга Эндрю Гинтера</b><span>Secure Operations Technology — идея односторонних шлюзов</span></div>
+<div data-r style="--i:1"><span class="mono">02</span><b>Пост в LinkedIn</b><span>Решение собрать доступный промышленный диод</span></div>
+<div data-r style="--i:2"><span class="mono">03</span><b>Первый прототип</b><span>Прозрачный корпус, первые тесты передачи</span></div>
+<div data-r style="--i:3"><span class="mono">04</span><b>Партнёрство с AIMI</b><span>Промышленная экспертиза и выход к заказчикам</span></div>
+<div data-r style="--i:4"><span class="mono">05</span><b>MVP</b><span>Второй прототип: Kafka, файлы, протоколы</span></div>
+<div data-r style="--i:5"><span class="mono">06</span><b>Digital Almaty</b><span>Публичное демо: SCADA-данные через диод</span></div>
+<div class="now" data-r style="--i:6"><span class="mono">сейчас</span><b>Готов к серии</b><span>Промышленные ПК PlantEdge</span></div>
+</div>
+</div></section>
+
+<section data-glow="#efe8d8"><div class="wrap">
+<div class="head">
+<h2 class="split">Диод работает как радиостанция</h2>
+<p class="lead" data-r>Вещает в эфир, но не слышит слушателей. Обычный интернет так не умеет: в нём каждое сообщение ждёт ответа. Поэтому у диода свои правила.</p>
+</div>
+<div class="rules">
+<div class="card tilt" data-r><svg viewBox="0 0 44 44" fill="none" stroke="#c6f432" stroke-width="2.4" stroke-linecap="round"><path d="M6 16h26l-6-6M38 28H12l6 6"/><path d="M30 34l8-8M38 34l-8-8" stroke="#e4572e"/></svg><h3>Без «рукопожатия»</h3><p>Обычное соединение (TCP) начинается с обмена «привет — привет». Ответ не придёт, поэтому данные шлют по UDP: отправил и не ждёшь.</p></div>
+<div class="card tilt" data-r style="--i:1"><svg viewBox="0 0 44 44" fill="none" stroke="#c6f432" stroke-width="2.4" stroke-linecap="round"><rect x="6" y="10" width="32" height="24" rx="5"/><path d="M12 18h10M12 24h20M12 29h14"/></svg><h3>Адрес записан заранее</h3><p>Сеть спрашивает «чей это адрес?», но ответить приёмник не может. Поэтому его адрес (MAC) заранее прописывают на отправителе.</p></div>
+<div class="card tilt" data-r style="--i:2"><svg viewBox="0 0 44 44" fill="none" stroke="#c6f432" stroke-width="2.4" stroke-linecap="round"><circle cx="22" cy="22" r="14"/><path d="M22 14v9l6 4"/></svg><h3>Ping молчит — так и надо</h3><p>Проверка «ты тут?» без ответа не работает. Канал проверяют иначе: смотрят на приёмнике, какие пакеты пришли.</p></div>
+<div class="card tilt" data-r style="--i:3"><svg viewBox="0 0 44 44" fill="none" stroke="#c6f432" stroke-width="2.4" stroke-linecap="round"><path d="M8 12h28M8 22h28M8 32h16"/><path d="M28 31l4 4 7-8"/></svg><h3>Переспросить нельзя</h3><p>Пакеты нумеруют, файлы отправляют с контрольной суммой и повтором. Получатель сам видит, всё ли дошло.</p></div>
+</div>
+</div></section>
+
+<section id="compare" data-glow="#e4572e"><div class="wrap">
+<div class="head">
+<h2 class="split">Диод против файрвола</h2>
+<p class="lead" data-r>Файрвол решает, кого пускать, по правилам в программе. Диод ничего не решает: обратной дороги у него нет.</p>
+</div>
+<div class="tbl" data-r><table>
+<thead><tr><th></th><th>Файрвол</th><th>Дата-диод</th></tr></thead>
+<tbody>
+<tr><th>Что защищает</th><td data-l="Файрвол">Программа с правилами</td><td class="win" data-l="Дата-диод">Физика: одно волокно, у приёмника нет передатчика</td></tr>
+<tr><th>Ошибка в настройке</th><td data-l="Файрвол">Может открыть дыру внутрь</td><td class="win" data-l="Дата-диод">Не может создать обратный путь</td></tr>
+<tr><th>Если взломали сам узел защиты</th><td data-l="Файрвол">Правила можно переписать</td><td class="win" data-l="Дата-диод">Канал остаётся односторонним</td></tr>
+<tr><th>Управление заводом снаружи</th><td class="win" data-l="Файрвол">Возможно</td><td data-l="Дата-диод">Невозможно, только наблюдение</td></tr>
+<tr><th>Что нужно поддерживать</th><td data-l="Файрвол">Обновления, аудит правил</td><td class="win" data-l="Дата-диод">Почти ничего на самом канале</td></tr>
+</tbody></table></div>
+<p class="src">Руководство NIST по безопасности промышленных систем (SP 800-82) описывает дата-диод как однонаправленный шлюз: устройство пропускает данные только в одну сторону.</p>
+</div></section>
+
+<section data-glow="#c6f432"><div class="wrap">
+<div class="head">
+<h2 class="split">Что можно делать с данными завода</h2>
+<p class="lead" data-r>Диод ставят не ради диода. Он открывает данные, к которым раньше нельзя было подключиться.</p>
+</div>
+<div class="bento">
+<div class="card big s4 r2 tilt" data-r><span class="k">01 · главное</span><h3>История процесса и дашборды для всех площадок</h3><p>Все измерения за годы, графики и KPI на одном экране. Руководство видит завод в реальном времени, не имея доступа к управлению.</p></div>
+<div class="card s2 tilt" data-r style="--i:1"><span class="k">02</span><h3>Управление тревогами</h3><p>Разбор аварийных сигналов, Smart Dabyl от AIMI</p></div>
+<div class="card s2 tilt" data-r style="--i:2"><span class="k">03</span><h3>Мониторинг безопасности</h3><p>Логи и инфраструктура в SIEM</p></div>
+<div class="card s2 half tilt" data-r><span class="k">04</span><h3>Облако и Power BI</h3><p>Отчёты в привычных инструментах</p></div>
+<div class="card s2 half tilt" data-r style="--i:1"><span class="k">05</span><h3>Предиктивная аналитика</h3><p>Модели, которые замечают поломку заранее</p></div>
+<div class="card s2 imgc" data-r style="--i:2"><img src="img/laptop.jpg" alt="Мониторинг данных PlantEdge" loading="lazy"></div>
+<div class="card s3 tilt" data-r><span class="k">06</span><h3>Оптимизация процесса</h3><p>Поиск потерь по живым данным</p></div>
+<div class="card s3 tilt" data-r style="--i:1"><span class="k">07</span><h3>Удалённые эксперты</h3><p>Специалисты видят процесс, но не могут ничего нажать</p></div>
+</div>
+</div></section>
+
+<section id="faq" data-glow="#efe8d8"><div class="wrap faq">
+<h2 class="split" style="margin-bottom:24px">Частые вопросы</h2>
+<details open><summary>Можно ли взломать дата-диод?</summary><p>Сам канал — нет: у него физически нет обратного пути, и никакая программа его не создаст. Но диод защищает только этот канал. Если рядом остался Wi-Fi, общий свитч или флешки, их закрывают отдельно. И компьютер внутри завода тоже нужно защищать как обычно.</p></details>
+<details><summary>Можно ли через диод управлять заводом?</summary><p>Нет, и в этом весь смысл. Через диод можно только смотреть. Команды оборудованию отдают изнутри заводской сети.</p></details>
+<details><summary>Что будет, если пакет потеряется?</summary><p>Переспросить нельзя, поэтому потери закладывают заранее. Сообщения нумеруют, файлы отправляют с контрольной суммой и повтором, а очередь Kafka сглаживает всплески нагрузки.</p></details>
+<details><summary>Чем это лучше полной изоляции сети?</summary><p>При полной изоляции (air gap) данные переносят вручную, на флешках — медленно, и флешка сама может занести вирус. Диод даёт живой поток данных, а внутрь по-прежнему ничего не попадает.</p></details>
+<details><summary>Где используют дата-диоды?</summary><p>Там, где цена ошибки очень высока: электростанции, включая атомные, нефтегаз, водоканалы, железные дороги, оборонные сети.</p></details>
+<details><summary>Чем отличается PlantEdge?</summary><p>Стандартные промышленные компьютеры, односторонние оптические адаптеры и открытый софт: Ubuntu, Docker, Kafka. Поверх — сервисы для работы с данными, ради которых диод и ставят. Решение развивается вместе с партнёром AIMI.</p></details>
+</div></section>
+
+<section class="final" data-glow="#c6f432" style="padding-top:40px"><div class="wrap">
+<h2 class="split">Видеть всё. <span class="lime">Не пускать никого.</span></h2>
+<div class="cta" data-r><a class="btn lime mag" href="#model">Ещё раз атаковать модель</a><a class="btn mag" href="#top">Наверх</a></div>
+</div></section>
+
+<footer><div class="wrap fgrid">
+<div><a class="logo" href="#top"><i></i>PlantEdge Diode</a><p style="color:var(--mut);margin-top:14px;max-width:44ch">Безопасная интеграция промышленных данных. Страница подготовлена по документации проекта, презентации PlantEdge и открытым источникам.</p></div>
+<div><b>Источники</b><ol>
+<li><a href="https://csrc.nist.gov/glossary/term/data_diode">NIST: data diode, по SP 800-82r3</a></li>
+<li><a href="https://csrc.nist.gov/glossary/term/one_way_transfer_device">NIST / CNSSI 4009: one-way transfer device</a></li>
+<li><a href="https://www.technologyreview.com/2019/03/05/103328/cybersecurity-critical-infrastructure-triton-malware/">MIT Technology Review: Triton</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Triton_(malware)">Wikipedia: Triton (malware)</a></li>
+<li><a href="https://waterfall-security.com/?p=14434">Waterfall Security: data diodes and unidirectional gateways</a></li>
+<li><a href="https://github.com/klockcykel/godiode">Godiode: передача файлов через диод</a></li>
+<li>Презентация PlantEdge Diode и документация MVP, ред. 2.0, ноябрь 2026</li>
+</ol></div>
+</div></footer>
+
+<script>
+{
+document.documentElement.classList.add('js');
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const C={bg:'#0b0c0b',card:'#151714',ink:'#efe8d8',mut:'#a9a596',dim:'#6f6d63',line:'rgba(239,232,216,.14)',lime:'#c6f432',red:'#e4572e',box:'#70786f',boxd:'#3a3f39'};
+const rr=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect(x,y,w,h,r)};
+const ease=t=>t<.5?2*t*t:1-(-2*t+2)**2/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* split headings into words */
+$$('.split').forEach(h=>{let i=0;const walk=n=>{[...n.childNodes].forEach(ch=>{if(ch.nodeType===3){const parts=ch.textContent.split(/([ \t\n\r]+)/);const frag=document.createDocumentFragment();parts.forEach(p=>{if(!p)return;if(/^[ \t\n\r]+$/.test(p)){frag.appendChild(document.createTextNode(p));return}const w=document.createElement('span');w.className='w';const s=document.createElement('span');s.textContent=p;s.style.setProperty('--i',i++);w.appendChild(s);frag.appendChild(w)});ch.replaceWith(frag)}else if(ch.nodeType===1)walk(ch)})};walk(h)});
+
+/* reveal on scroll */
+const rio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target);if(e.target.querySelector('[data-count]')||e.target.hasAttribute('data-count'))count(e.target)}}),{rootMargin:'0px 0px -10% 0px',threshold:.08});
+$$('[data-r],.split').forEach(el=>rio.observe(el));
+const count=el=>{(el.matches('[data-count]')?[el]:[...el.querySelectorAll('[data-count]')]).forEach(n=>{const to=+n.dataset.count,from=+(n.dataset.from||0);if(RM){n.textContent=to;return}const t0=performance.now(),d=1400;const st=now=>{const k=Math.min(1,(now-t0)/d);n.textContent=Math.round(lerp(from,to,1-(1-k)**3));if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)})};
+
+/* section glow -> background blob colour */
+const b1=$('.b1');
+const gio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.target.dataset.glow)b1.style.backgroundColor=e.target.dataset.glow}),{rootMargin:'-45% 0px -45% 0px'});
+$$('[data-glow]').forEach(s=>gio.observe(s));
+
+/* scroll: fibre progress, nav hide, parallax */
+const root=document.documentElement,nav=$('#nav'),pars=$$('[data-par]');let lastY=0,ticking=false;
+const onScroll=()=>{const y=scrollY,max=root.scrollHeight-innerHeight||1;root.style.setProperty('--p',(y/max).toFixed(4));
+nav.classList.toggle('hide',y>lastY&&y>400);lastY=y;
+if(!RM)pars.forEach(el=>{const r=el.parentElement.getBoundingClientRect();const k=(r.top+r.height/2-innerHeight/2)/innerHeight;el.parentElement.style.setProperty('--py',(k*parseFloat(el.dataset.par)*r.height).toFixed(1)+'px')});
+ticking=false};
+addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
+
+/* magnetic buttons + spotlight/tilt cards (pointer only) */
+if(!RM&&matchMedia('(hover:hover)').matches){
+$$('.mag').forEach(b=>{b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();b.style.setProperty('--mx',((e.clientX-r.left-r.width/2)*.18).toFixed(1)+'px');b.style.setProperty('--my',((e.clientY-r.top-r.height/2)*.25).toFixed(1)+'px')});b.addEventListener('pointerleave',()=>{b.style.setProperty('--mx','0px');b.style.setProperty('--my','0px')})});
+$$('.card').forEach(c=>{c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;c.style.setProperty('--x',x+'px');c.style.setProperty('--y',y+'px');if(c.classList.contains('tilt'))c.style.transform=`perspective(900px) rotateX(${((y/r.height)-.5)*-5}deg) rotateY(${((x/r.width)-.5)*6}deg)`});c.addEventListener('pointerleave',()=>{c.style.transform=''})});}
+
+/* gallery nav */
+const gal=$('#gal');const gstep=d=>{const s=gal.querySelector('.shot');gal.scrollBy({left:d*(s.offsetWidth+16),behavior:'smooth'})};
+$('#gPrev').onclick=()=>gstep(-1);$('#gNext').onclick=()=>gstep(1);
+gal.addEventListener('keydown',e=>{if(e.key==='ArrowRight')gstep(1);if(e.key==='ArrowLeft')gstep(-1)});gal.tabIndex=0;
+
+/* video */
+const reel=$('#reel'),play=$('#play');
+play.onclick=()=>{play.classList.add('off');reel.play().catch(()=>{play.classList.remove('off')})};
+reel.addEventListener('play',()=>play.classList.add('off'));reel.addEventListener('ended',()=>play.classList.remove('off'));
+
+/* ---------- LIVE MODEL (canvas) ---------- */
+const cv=$('#hero'),cx=cv.getContext('2d'),fig=$('#heroFig'),status=$('#status');
+let W=0,H=0,paused=false,last=performance.now(),clock=0,nextData=0,nextAtk=4,resetAt=0,packets=[],bursts=[],bars=[.35,.5,.42,.6,.55,.7,.48],flash=0,visible=true;
+const sizeHero=()=>{const d=Math.min(devicePixelRatio||1,2);W=fig.clientWidth;H=fig.clientHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);drawHero()};
+new ResizeObserver(sizeHero).observe(fig);
+new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(fig);
+const geo=()=>{const n=W<620,cy=H*(n?.6:.6),bw=Math.min(200,W*(n?.2:.17)),bh=bw*.62;return{n,cy,bw,bh,cA:W*(n?.31:.33),cB:W*(n?.69:.67),src:{x:W*(n?.09:.1),y:cy},dst:{x:W*(n?.915:.9),y:cy},net:{x:W*(n?.84:.86),y:H*.2}}};
+const pathPt=(pts,t)=>{let L=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);seg.push(d);L+=d}let d=t*L;for(let i=0;i<seg.length;i++){if(d<=seg[i]){const k=seg[i]?d/seg[i]:0;return{x:lerp(pts[i].x,pts[i+1].x,k),y:lerp(pts[i].y,pts[i+1].y,k),i}}d-=seg[i]}return{...pts[pts.length-1],i:seg.length-1}};
+const dataPath=g=>[g.src,{x:g.cA-g.bw/2,y:g.cy},{x:g.cA+g.bw/2,y:g.cy},{x:g.cB-g.bw/2,y:g.cy},{x:g.cB+g.bw/2,y:g.cy},g.dst];
+const atkPath=g=>[g.net,{x:g.cB+g.bw*.1,y:g.cy-g.bh/2-4},{x:g.cB-g.bw/2+6,y:g.cy}];
+const sendData=()=>packets.push({k:'d',t:0,v:.4+Math.random()*.5});
+const attack=()=>{nextAtk=clock+14;packets.push({k:'a',t:0});status.textContent='Атака из интернета: вирус пытается пройти через Catcher на завод…';status.classList.remove('alert')};
+const bP=$('#bPause');const togglePause=()=>{paused=!paused;bP.textContent=paused?'Продолжить':'Пауза';bP.setAttribute('aria-pressed',paused);last=performance.now()};
+$('#bSend').onclick=()=>{sendData();if(paused)togglePause()};$('#bAtk').onclick=()=>{attack();if(paused)togglePause()};bP.onclick=togglePause;
+const font=(w,s)=>`${w} ${s}px Onest,system-ui,sans-serif`;
+const drawBox=(c,x,y,w,h,label,sub)=>{c.save();c.fillStyle='rgba(0,0,0,.45)';c.beginPath();c.ellipse(x,y+h/2+10,w*.55,9,0,0,7);c.fill();
+const g=c.createLinearGradient(0,y-h/2,0,y+h/2);g.addColorStop(0,'#565d55');g.addColorStop(1,'#2c302b');c.fillStyle=g;rr(c,x-w/2,y-h/2,w,h,9);c.fill();
+const fins=9;for(let i=0;i<fins;i++){const fx=x-w/2+w*.06+i*(w*.88/fins);const fg=c.createLinearGradient(fx,0,fx+w*.06,0);fg.addColorStop(0,'#a3aaa0');fg.addColorStop(1,'#6a7168');c.fillStyle=fg;rr(c,fx,y-h/2-h*.06,w*.88/fins*.62,h*.42,2);c.fill()}
+c.fillStyle='#1f221e';rr(c,x-w/2+8,y+h*.1,w-16,h*.3,5);c.fill();
+for(let i=0;i<3;i++){c.fillStyle=i===0?C.lime:'rgba(239,232,216,.25)';c.beginPath();c.arc(x+w/2-18-i*12,y+h*.25,2.8,0,7);c.fill()}c.restore();
+c.fillStyle=C.ink;c.textAlign='center';c.font=font(700,W<620?13:15);c.fillText(label,x,y+h/2+26);c.fillStyle=C.mut;c.font=font(500,W<620?12:13);c.fillText(sub,x,y+h/2+44)};
+const turbine=(c,x,y,r,a)=>{c.save();c.translate(x,y);c.strokeStyle=C.ink;c.globalAlpha=.85;c.lineWidth=2;c.beginPath();c.arc(0,0,r,0,7);c.stroke();c.rotate(a);c.fillStyle=C.ink;for(let i=0;i<6;i++){c.rotate(Math.PI/3);c.beginPath();c.ellipse(r*.48,0,r*.42,r*.13,.4,0,7);c.fill()}c.globalAlpha=1;c.beginPath();c.arc(0,0,r*.17,0,7);c.fillStyle=C.lime;c.shadowColor=C.lime;c.shadowBlur=12;c.fill();c.restore()};
+const skyline=(c,g)=>{const base=g.cy-g.bh/2-40;if(base<80)return;c.save();c.fillStyle=C.ink;c.globalAlpha=.06;
+[[.04,.1,.42],[.12,.035,.75],[.17,.09,.5],[.27,.11,.36],[.39,.06,.58]].forEach(([x,w,h])=>{const hh=(base-64)*h;c.beginPath();c.roundRect(W*x,base-hh,W*w,hh,[6,6,0,0]);c.fill()});
+for(let i=0;i<5;i++){const k=((clock*.12+i/5)%1),hh=(base-64)*.75;c.globalAlpha=.06*(1-k);c.beginPath();c.arc(W*.145+k*30,base-hh-8-k*40,6+k*14,0,7);c.fill()}
+c.globalAlpha=.06;[[.56,.07,.45],[.64,.05,.7],[.7,.08,.38],[.79,.06,.55],[.86,.1,.28],[.95,.04,.5]].forEach(([x,w,h])=>c.fillRect(W*x,base-(base-64)*h,W*w,(base-64)*h));
+c.globalAlpha=.18;c.fillRect(0,base,W,1);c.restore()};
+const drawHero=()=>{if(!W)return;const c=cx,g=geo();c.clearRect(0,0,W,H);
+c.fillStyle='rgba(198,244,50,.035)';c.fillRect(0,0,W/2,H);c.fillStyle='rgba(239,232,216,.025)';c.fillRect(W/2,0,W/2,H);
+c.save();c.setLineDash([2,8]);c.strokeStyle='rgba(198,244,50,.45)';c.lineWidth=2;c.beginPath();c.moveTo(W/2,0);c.lineTo(W/2,H);c.stroke();c.restore();
+c.textAlign='left';c.fillStyle=C.ink;c.font=font(700,g.n?13:15);c.fillText(g.n?'Завод':'Завод · сеть OT',18,30);c.textAlign='right';c.fillText(g.n?'Офис, облако':'Офис и облако · сеть IT',W-18,30);
+c.font=font(500,g.n?12:13);c.fillStyle=C.mut;c.textAlign='left';c.fillText('защищаем',18,48);c.textAlign='right';c.fillText('сюда идут данные',W-18,48);
+skyline(c,g);
+c.strokeStyle='rgba(239,232,216,.25)';c.lineWidth=2;c.beginPath();c.moveTo(g.src.x,g.cy);c.lineTo(g.cA-g.bw/2,g.cy);c.moveTo(g.cB+g.bw/2,g.cy);c.lineTo(g.dst.x-28,g.cy);c.stroke();
+c.setLineDash([5,6]);c.beginPath();c.moveTo(g.net.x,g.net.y+16);c.lineTo(g.cB+g.bw*.1,g.cy-g.bh/2-4);c.stroke();c.setLineDash([]);
+const fx0=g.cA+g.bw/2,fx1=g.cB-g.bw/2;c.lineCap='round';c.strokeStyle='rgba(198,244,50,.18)';c.lineWidth=12;c.beginPath();c.moveTo(fx0,g.cy);c.lineTo(fx1,g.cy);c.stroke();c.strokeStyle=C.lime;c.lineWidth=2.5;c.shadowColor=C.lime;c.shadowBlur=14;c.stroke();c.shadowBlur=0;
+for(let i=0;i<5;i++){const p=(clock*.55+i/5)%1;c.fillStyle=`rgba(255,255,255,${.95-p*.4})`;c.beginPath();c.arc(lerp(fx0,fx1,p),g.cy,2.6,0,7);c.fill()}
+{const t=g.n?'1 волокно':'TX → одно волокно → RX',mx=(fx0+fx1)/2;c.font=font(600,g.n?12:13);const tw=c.measureText(t).width+18;c.fillStyle='rgba(11,12,11,.85)';rr(c,mx-tw/2,g.cy+14,tw,24,12);c.fill();c.strokeStyle='rgba(198,244,50,.4)';c.lineWidth=1;c.stroke();c.fillStyle=C.lime;c.textAlign='center';c.fillText(t,mx,g.cy+30)}
+turbine(c,g.src.x,g.cy,g.n?19:26,clock*3);c.fillStyle=C.mut;c.font=font(500,g.n?12:13);c.textAlign='center';c.fillText('турбина',g.src.x,g.cy+(g.n?40:50));
+const dw=g.n?44:66,dh=g.n?36:50,dx=g.dst.x-dw/2,dy=g.cy-dh/2;c.fillStyle='#1a1d19';rr(c,dx,dy,dw,dh,7);c.fill();c.strokeStyle='rgba(239,232,216,.5)';c.lineWidth=1.5;c.stroke();
+bars.forEach((b,i)=>{const w2=(dw-12)/bars.length;c.fillStyle=i===bars.length-1?C.lime:C.ink;c.globalAlpha=i===bars.length-1?1:.75;c.fillRect(dx+6+i*w2,dy+dh-5-b*(dh-12),w2*.7,b*(dh-12))});c.globalAlpha=1;
+c.fillStyle=C.mut;c.fillText('графики',g.dst.x,g.cy+(g.n?40:50));
+c.save();c.translate(g.net.x,g.net.y);c.fillStyle='#1a1d19';c.strokeStyle='rgba(239,232,216,.6)';c.lineWidth=1.5;c.beginPath();c.arc(-12,4,11,Math.PI*.5,Math.PI*1.5);c.arc(0,-4,14,Math.PI,0);c.arc(14,4,10,Math.PI*1.5,Math.PI*.5);c.closePath();c.fill();c.stroke();c.restore();
+c.fillStyle=C.mut;c.textAlign='right';c.fillText('интернет',g.net.x-30,g.net.y+5);c.textAlign='center';
+drawBox(c,g.cA,g.cy,g.bw,g.bh,'Caster','отправитель');drawBox(c,g.cB,g.cy,g.bw,g.bh,'Catcher','получатель');
+for(const p of packets){if(p.k==='d'){const q=pathPt(dataPath(g),ease(Math.min(p.t,1)));if(q.i===1||q.i===3)continue;const inF=q.i===2;c.save();c.fillStyle=inF?'#fff':C.lime;c.shadowColor=C.lime;c.shadowBlur=inF?22:10;c.beginPath();c.arc(q.x,q.y,inF?5.5:4.5,0,7);c.fill();c.restore()}
+else{const q=pathPt(atkPath(g),Math.min(p.t,1));c.save();c.translate(q.x,q.y);c.rotate(clock*4);c.fillStyle=C.red;c.shadowColor=C.red;c.shadowBlur=16;for(let i=0;i<8;i++){c.rotate(Math.PI/4);c.fillRect(-1.5,5,3,5)}c.beginPath();c.arc(0,0,6.5,0,7);c.fill();c.restore()}}
+for(const b of bursts){const k=b.t;c.strokeStyle=C.red;c.lineWidth=2.5;c.globalAlpha=Math.max(0,1-k);c.beginPath();c.arc(b.x,b.y,8+k*28,0,7);c.stroke();c.globalAlpha=Math.min(1,Math.max(0,(1.6-k)*2));
+if(c.globalAlpha>0){const s=g.n?'✕ назад нельзя':'✕ у приёмника нет передатчика';c.font=font(700,g.n?12:14);const tw=c.measureText(s).width+20,tx=b.x-8,ty=b.y-42;c.fillStyle=C.red;rr(c,tx-tw/2,ty-17,tw,28,14);c.fill();c.fillStyle='#fff';c.fillText(s,tx,ty+2)}c.globalAlpha=1}
+if(flash>0){c.fillStyle=`rgba(228,87,46,${flash*.1})`;c.fillRect(W/2,0,W/2,H)}};
+const step=dt=>{clock+=dt;if(clock>nextData){sendData();nextData=clock+.75}
+for(const p of packets){p.t+=dt/(p.k==='d'?3.2:1.6);if(p.k==='a'&&p.t>=1&&!p.done){p.done=true;const g=geo();bursts.push({x:g.cB-g.bw/2+6,y:g.cy,t:0});flash=1;resetAt=clock+5;status.textContent='Вирус упёрся в диод. Обратного провода нет — до завода не дошло ни одного бита.';status.classList.add('alert')}
+if(p.k==='d'&&p.t>=1&&!p.done){p.done=true;bars.push(p.v);bars.shift()}}
+packets=packets.filter(p=>!(p.done&&(p.k==='d'||p.t>1)));for(const b of bursts)b.t+=dt*.7;bursts=bursts.filter(b=>b.t<1.6);flash=Math.max(0,flash-dt*1.5);
+if(clock>nextAtk&&!packets.some(p=>p.k==='a')&&!bursts.length)attack();
+if(resetAt&&clock>resetAt){resetAt=0;status.classList.remove('alert');status.textContent='Показания снова идут в офис как обычно. Можно атаковать ещё раз.'}};
+const loop=now=>{const dt=Math.min(.05,(now-last)/1000);last=now;if(!paused&&visible){step(dt);drawHero()}requestAnimationFrame(loop)};
+if(RM){sendData();packets[0].t=.45;drawHero()}else requestAnimationFrame(loop);
+document.fonts?.ready.then(()=>drawHero());
+
+/* ---------- PHILOSOPHY: valve vs pump ---------- */
+const tankSVG=(svg,kind)=>{const f=svg.parentElement,w=f.clientWidth,h=f.clientHeight;const tw=Math.min(130,w*.28),th=h*.52,ty=h*.3,lx=20,rx=w-20-tw,py=ty+th*.72;
+const tank=(x,label,lvl)=>`<rect x="${x}" y="${ty}" width="${tw}" height="${th}" rx="10" fill="none" stroke="${C.ink}" stroke-opacity=".55" stroke-width="2"/><rect x="${x+4}" y="${ty+th*(1-lvl)}" width="${tw-8}" height="${th*lvl-4}" rx="7" fill="${C.lime}" fill-opacity=".22"><animate attributeName="y" values="${ty+th*(1-lvl)};${ty+th*(1-lvl)-6};${ty+th*(1-lvl)}" dur="4s" repeatCount="indefinite"/></rect><text x="${x+tw/2}" y="${ty+th+28}" text-anchor="middle" font-family="Unbounded,sans-serif" font-weight="700" font-size="15" fill="${C.ink}">${label}</text>`;
+const x0=lx+tw,x1=rx,mx=(x0+x1)/2;let mid='';
+if(kind==='valve'){mid=`<path d="M${x0} ${py}H${x1}" stroke="#2a2e29" stroke-width="16"/><path d="M${x0} ${py}H${x1}" stroke="${C.lime}" stroke-width="5" stroke-dasharray="10 12" opacity=".9"><animate attributeName="stroke-dashoffset" values="0;-88;0" dur="5s" repeatCount="indefinite"/></path>
+<g transform="translate(${mx} ${py})"><path d="M-20 -14L0 0L-20 14ZM20 -14L0 0L20 14Z" fill="#1b1e1a" stroke="${C.ink}" stroke-width="2"/><path d="M0 0V-30" stroke="${C.ink}" stroke-width="2.5"/><ellipse cx="0" cy="-32" rx="16" ry="5" fill="none" stroke="${C.ink}" stroke-width="2.5"><animateTransform attributeName="transform" type="rotate" values="0;90;0" dur="5s" repeatCount="indefinite"/></ellipse></g>
+<text x="${mx}" y="${ty-16}" text-anchor="middle" font-size="13" font-weight="600" fill="${C.red}" font-family="Onest,sans-serif">⇄ туда и обратно</text>`}
+else{const top=ty-26;mid=`<path d="M${x0} ${py}H${mx-26}M${mx} ${py-26}V${top}H${x1-30}V${ty+20}" fill="none" stroke="#2a2e29" stroke-width="16" stroke-linejoin="round"/><path d="M${x0} ${py}H${mx-26}M${mx} ${py-26}V${top}H${x1-30}V${ty+20}" fill="none" stroke="${C.lime}" stroke-width="5" stroke-dasharray="10 12" stroke-linejoin="round"><animate attributeName="stroke-dashoffset" values="0;-44" dur="1s" repeatCount="indefinite"/></path>
+<path d="M${x1-38} ${ty+10}L${x1-30} ${ty+26}L${x1-22} ${ty+10}" fill="none" stroke="${C.lime}" stroke-width="3"/>
+<g transform="translate(${mx} ${py})"><circle r="26" fill="#1b1e1a" stroke="${C.ink}" stroke-width="2"/><g><path d="M0 -16A16 16 0 0 1 14 8" fill="none" stroke="${C.lime}" stroke-width="3"/><path d="M14 8l-8 -1M14 8l3 -8" stroke="${C.lime}" stroke-width="3" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" values="0;360" dur="2s" repeatCount="indefinite"/></g></g>
+<text x="${mx}" y="${top-14}" text-anchor="middle" font-size="13" font-weight="600" fill="${C.lime}" font-family="Onest,sans-serif">только OT → IT</text>`}
+svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=tank(lx,'OT',kind==='valve'?.6:.55)+tank(rx,'IT',kind==='valve'?.6:.75)+mid};
+const pv=$('#pValve'),pp=$('#pPump');new ResizeObserver(()=>{tankSVG(pv,'valve');tankSVG(pp,'pump')}).observe(pv.parentElement);
+
+/* ---------- PHYSICS ---------- */
+const ps=$('#phys'),pf=$('#physFig');let pmode='diode';
+const drawPhys=()=>{const w=pf.clientWidth,h=pf.clientHeight,n=w<480;const bw=n?92:130,bh=h*.62,y0=(h-bh)/2-8,xl=18,xr=w-18-bw,ya=y0+bh*.36,yb=y0+bh*.74,lx=xl+bw-20,rx=xr+20;ps.setAttribute('viewBox',`0 0 ${w} ${h}`);
+const dev=(x,t)=>`<rect x="${x}" y="${y0}" width="${bw}" height="${bh}" rx="14" fill="#1a1d19" stroke="${C.ink}" stroke-opacity=".35" stroke-width="1.5"/><text x="${x+bw/2}" y="${y0+26}" text-anchor="middle" font-family="Unbounded,sans-serif" font-weight="700" font-size="${n?12:14}" fill="${C.ink}">${t}</text>`;
+const port=(x,y,tx,on)=>`<g opacity="${on?1:.25}"><rect x="${x-26}" y="${y-14}" width="52" height="28" rx="7" fill="${tx?C.lime:'#0b0c0b'}" stroke="${tx?C.lime:C.ink}" stroke-width="1.5"/><text x="${x}" y="${y+5}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" font-weight="700" fill="${tx?'#0b0c0b':C.ink}">${tx?'TX':'RX'}</text></g>`;
+const fib=(y,dir,on)=>{const a=lx+26,b=rx-26;if(!on)return `<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${C.ink}" stroke-opacity=".3" stroke-width="1.5" stroke-dasharray="3 7"/><text x="${(a+b)/2}" y="${y-12}" text-anchor="middle" font-size="13" font-weight="600" fill="${C.red}" font-family="Onest,sans-serif">волокна нет</text>`;
+const pul=[0,1,2,3].map(i=>`<circle r="4.5" fill="#fff"><animateMotion dur="1.6s" begin="${i*.4}s" repeatCount="indefinite" path="M${dir>0?a:b} ${y}H${dir>0?b:a}"/></circle>`).join('');
+return `<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${C.lime}" stroke-opacity=".2" stroke-width="10" stroke-linecap="round"/><line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${C.lime}" stroke-width="2.5"/>${RM?'':pul}<text x="${(a+b)/2}" y="${y-14}" text-anchor="middle" font-size="13" font-weight="600" fill="${C.ink}" font-family="Onest,sans-serif">${dir>0?'туда →':'← обратно'}</text>`};
+const d=pmode==='diode';ps.innerHTML=dev(xl,'Завод')+dev(xr,'Офис')+fib(ya,1,true)+fib(yb,-1,!d)+port(lx,ya,true,true)+port(rx,ya,false,true)+port(lx,yb,false,!d)+port(rx,yb,true,!d)+(d?`<text x="${rx}" y="${yb+34}" text-anchor="middle" font-size="12.5" font-weight="600" fill="${C.red}" font-family="Onest,sans-serif">${n?'нет TX':'нет передатчика'}</text>`:'')+`<text x="${w/2}" y="${h-16}" text-anchor="middle" font-size="${n?13:14}" font-weight="600" fill="${d?C.lime:C.mut}" font-family="Onest,sans-serif">${d?'Свет идёт только слева направо':'Две дороги: данные ходят в обе стороны'}</text>`};
+new ResizeObserver(drawPhys).observe(pf);
+const setP=m=>{pmode=m;$('#pNormal').setAttribute('aria-selected',m==='normal');$('#pDiode').setAttribute('aria-selected',m==='diode');drawPhys()};
+$('#pNormal').onclick=()=>setP('normal');$('#pDiode').onclick=()=>setP('diode');
+
+/* ---------- SCHEME ---------- */
+const MODES={
+tele:{L:[['Оборудование','Турбины, насосы, счётчики. Ими управляют контроллеры (PLC) и SCADA.'],['Сборщик протоколов','Опрашивает оборудование на его языке: IEC 104, OPC UA, MQTT. Диалог «вопрос — ответ» остаётся внутри завода.'],['Kafka на Caster','Очередь-буфер: складывает измерения по темам, чтобы ничего не потерялось при всплесках.'],['HL Caster','Упаковывает каждую запись в JSON-конверт с номером и отправляет UDP-пакетом. Ответа не ждёт.']],
+D:['Дата-диод','Свет идёт только от Caster к Catcher. Обратного волокна нет.'],
+R:[['HL Catcher','Принимает пакеты, распаковывает и кладёт в свою Kafka в ту же тему.'],['Kafka на Catcher','Копия потока уже в безопасной зоне. Отсюда её читают все потребители.'],['Провайдер','Отдаёт данные в привычном виде, например как сервер IEC 104 или OPC UA.'],['Потребители','Grafana, история процесса, аналитика, облако. Видят завод, но дотянуться до него не могут.']]},
+file:{L:[['File Browser','Оператор загружает файл через веб-страницу на Caster.'],['Папка diode_out','Исходящие файлы ждут отправки.'],['Godiode: отправка','Режет файл на куски, шлёт манифест и куски по UDP и может повторить отправку.']],
+D:['Дата-диод','Куски файла идут одним направлением, по тому же волокну.'],
+R:[['Godiode: приём','Собирает куски и сверяет контрольную сумму. Битый файл не появится.'],['Папка diode_in','Готовые файлы на стороне офиса.'],['File Browser','Сотрудник скачивает файл через веб-страницу.']]}};
+MODES.atk={L:MODES.tele.L,D:MODES.tele.D,R:MODES.tele.R};
+const ATK=[['Интернет','Хакер или заражённый офисный компьютер начинает атаку.'],['Потребители','Допустим худшее: взломали сервер с графиками.'],['Провайдер','Взломан и сервер, который раздаёт данные.'],['Kafka на Catcher','Под контролем и очередь данных снаружи.'],['HL Catcher','Даже компьютер Catcher в руках хакера.'],['Дата-диод','Пробует отправить команду назад. Фотоприёмник не умеет светить: сигнал не уходит.'],['Завод','Не затронут. Ни одного бита не пришло.']];
+const ss=$('#sch'),sf=$('#schFig'),log=$('#log');let mode='tele',route=[],prog2=0,curIdx=-1,schLast=performance.now(),hold=0,schVis=true;
+const layout=()=>{const w=sf.clientWidth,h=sf.clientHeight,m=MODES[mode],two=w>=560,n=m.L.length,pos=[];
+if(two){const colW=Math.min(230,w*.34),lx=18,rx=w-18-colW,top=60,gap=(h-top-50-n*56)/(n-1);m.L.forEach((s,i)=>pos.push({x:lx,y:top+i*(56+gap),w:colW,h:56,t:s[0],side:'L'}));const by=top+(n-1)*(56+gap)+28;pos.push({x:w/2-48,y:by-58,w:96,h:116,t:m.D[0],side:'D'});m.R.forEach((s,i)=>pos.push({x:rx,y:top+(n-1-i)*(56+gap),w:colW,h:56,t:s[0],side:'R'}))}
+else{const bw=w-32,bh=42,gap=10;let y=54;m.L.forEach(s=>{pos.push({x:16,y,w:bw,h:bh,t:s[0],side:'L'});y+=bh+gap});pos.push({x:16,y:y+14,w:bw,h:48,t:m.D[0],side:'D'});y+=14+48+46;m.R.forEach(s=>{pos.push({x:16,y,w:bw,h:bh,t:s[0],side:'R'});y+=bh+gap})}
+return{w,h,two,pos}};
+const center=p=>({x:p.x+p.w/2,y:p.y+p.h/2});
+const buildRoute=L=>{const n=MODES[mode].L.length;if(mode!=='atk')return L.pos.map((p,i)=>({...center(p),i}));const net={x:L.w-34,y:L.two?26:L.h-16};const r=[{...net,i:-1}];for(let i=L.pos.length-1;i>n;i--)r.push({...center(L.pos[i]),i});const D=L.pos[n];r.push({x:L.two?D.x+D.w:D.x+D.w/2,y:L.two?D.y+D.h/2:D.y+D.h,i:n});return r};
+const renderLog=()=>{const m=MODES[mode],items=mode==='atk'?ATK:[...m.L,m.D,...m.R];log.innerHTML=items.map((s,i)=>`<li data-i="${i}"><b>${i+1}. ${esc(s[0])}</b><span>${esc(s[1])}</span></li>`).join('');log.querySelectorAll('li').forEach(li=>li.onclick=()=>{const L=layout();route=buildRoute(L);const i=+li.dataset.i;prog2=Math.min(i,route.length-1)/(route.length-1);hold=0;curIdx=-1})};
+const setLog=i=>{if(i===curIdx)return;curIdx=i;log.querySelectorAll('li').forEach((li,j)=>{li.classList.toggle('on',j===i);li.classList.toggle('block',mode==='atk'&&j>=5&&j===i)})};
+const drawSch=()=>{const L=layout(),n=MODES[mode].L.length;route=buildRoute(L);ss.setAttribute('viewBox',`0 0 ${L.w} ${L.h}`);
+const pp=pathPt(route,Math.min(prog2,1));let active=mode==='atk'?(prog2>=1?(hold>.6?6:5):Math.min(4,pp.i)):Math.min(route.length-1,Math.round(prog2*(route.length-1)));setLog(active);
+const nodeIdx=mode==='atk'?(active<=0?-1:route[Math.min(active,route.length-1)].i):active;let s='';const F='font-family="Onest,sans-serif"';
+if(L.two){s+=`<rect width="${L.w/2}" height="${L.h}" fill="rgba(198,244,50,.035)"/><line x1="${L.w/2}" y1="0" x2="${L.w/2}" y2="${L.h}" stroke="rgba(198,244,50,.4)" stroke-dasharray="2 8" stroke-width="2"/><text x="18" y="32" ${F} font-size="14" font-weight="700" fill="${C.ink}">Caster · внутри завода</text><text x="${L.w/2+18}" y="32" ${F} font-size="14" font-weight="700" fill="${C.ink}">Catcher · снаружи</text>`}
+else{const D=L.pos[n];s+=`<rect width="${L.w}" height="${D.y-4}" fill="rgba(198,244,50,.035)"/><text x="16" y="32" ${F} font-size="14" font-weight="700" fill="${C.ink}">Caster · внутри завода</text><text x="16" y="${D.y+D.h+30}" ${F} font-size="14" font-weight="700" fill="${C.ink}">Catcher · снаружи</text>`}
+const all=L.pos.map(center);s+=`<polyline points="${all.map(p=>p.x+','+p.y).join(' ')}" fill="none" stroke="${C.ink}" stroke-opacity=".2" stroke-width="2"/>`;
+L.pos.forEach((p,i)=>{const on=i===nodeIdx,isD=p.side==='D',blocked=mode==='atk'&&isD&&prog2>=1,dim=mode==='atk'&&p.side==='L';
+const fill=isD?(blocked?C.red:C.lime):(on?C.ink:'#151714'),tc=isD?(blocked?'#fff':'#0b0c0b'):(on?'#0b0c0b':C.ink);
+s+=`<g opacity="${dim?.4:1}"><rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="12" fill="${fill}" stroke="${isD?fill:(on?C.ink:'rgba(239,232,216,.25)')}" stroke-width="1.5"${isD&&!blocked?' style="filter:drop-shadow(0 0 14px rgba(198,244,50,.5))"':''}/>`;
+if(isD&&L.two)s+=`<text x="${p.x+p.w/2}" y="${p.y+p.h/2-6}" text-anchor="middle" font-family="Unbounded,sans-serif" font-size="13" font-weight="700" fill="${tc}">Дата-</text><text x="${p.x+p.w/2}" y="${p.y+p.h/2+12}" text-anchor="middle" font-family="Unbounded,sans-serif" font-size="13" font-weight="700" fill="${tc}">диод</text>`;
+else s+=`<text x="${p.x+p.w/2}" y="${p.y+p.h/2+5}" text-anchor="middle" ${F} font-size="14" font-weight="600" fill="${tc}">${esc(isD?'Дата-диод · одно волокно':p.t)}</text>`;s+='</g>'});
+if(mode==='atk'){const r0=route[0];s+=`<text x="${r0.x-14}" y="${r0.y+5}" text-anchor="end" ${F} font-size="13" font-weight="700" fill="${C.red}">интернет</text>`;
+if(prog2>=1){const st=route[route.length-1];s+=`<circle cx="${st.x}" cy="${st.y}" r="${10+Math.min(hold,1)*24}" fill="none" stroke="${C.red}" stroke-width="3" opacity="${Math.max(0,1-hold)}"/><text x="${L.w/2}" y="${L.two?L.pos[n].y-18:L.pos[n].y-10}" text-anchor="middle" ${F} font-size="14" font-weight="700" fill="${C.red}">✕ дальше пути нет</text>`}}
+const col=mode==='atk'?C.red:C.lime;s+=`<circle cx="${pp.x}" cy="${pp.y}" r="15" fill="${col}" opacity=".25"/><circle cx="${pp.x}" cy="${pp.y}" r="7" fill="${col}" style="filter:drop-shadow(0 0 8px ${col})"/>`;ss.innerHTML=s};
+new ResizeObserver(drawSch).observe(sf);new IntersectionObserver(es=>{schVis=es[0].isIntersecting}).observe(sf);
+const schLoop=now=>{const dt=Math.min(.05,(now-schLast)/1000);schLast=now;if(schVis&&!RM){const segs=Math.max(1,route.length-1);if(prog2<1)prog2=Math.min(1,prog2+dt/(segs*1.15));else{hold+=dt*.6;if(hold>2.4){prog2=0;hold=0}}drawSch()}requestAnimationFrame(schLoop)};
+$$('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;$$('[data-mode]').forEach(x=>x.setAttribute('aria-selected',x===b));prog2=0;hold=0;curIdx=-1;renderLog();drawSch()});
+renderLog();if(RM){prog2=.5;drawSch()}else requestAnimationFrame(schLoop);
+}
+</script>
+</body>
+</html>
